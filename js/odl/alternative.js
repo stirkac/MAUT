@@ -7,19 +7,19 @@ function dodaj_alternativo() {
 	var append = "\
             <div id='a"+alt_id+"' class='alternativa'> \
                 <span class='close'></span> \
-            	<input type='text' placeholder='naziv alternative' class='form-control' />";
+            	<input type='text' value='-naziv-' class='alt_header' />";
 	
-	$("#art3 > div").each(function() { //sklicujemo se na funkcije
+	$("#tab3 > div").each(function() { //sklicujemo se na funkcije
 		if($(this).css('display') !== 'none') {
-			if(data[this.id]['type'] == 'st') {
+			if(podatki[this.id]['type'] == 'st') {
 				
 				append += "<select class='alt_par_text' id='a"+alt_id+"_"+this.id+"' >";
-				for(i in data[this.id]['st_par']['par']) {
-					append += "<option>"+data[this.id]['st_par']['par'][i]+"</option>";
+				for(i in podatki[this.id]['st_par']['par']) {
+					append += "<option>"+podatki[this.id]['st_par']['par'][i]+"</option>";
 				}
 				append += "</select>";
 			} else {
-				append += "<input type='text' id='a"+alt_id+"_"+this.id+"' placeholder='vrednost' class='form-control'  />";
+				append += "<input type='text' id='a"+alt_id+"_"+this.id+"' value='-vnesite-' class='alt_par_text' />";
 			}
 		}
 	});
@@ -33,9 +33,9 @@ function dodaj_alternativo() {
 	$("div#a"+alt_id+" span.close").click(function() {
 		$(this).parent().remove();
 	});
-
-	id_alternative++;
-	console.log(id_alternative);
+	
+	alt++;
+	//console.log(alt);
 }
 
 function create_legend_item(id, ime) {
@@ -45,7 +45,7 @@ function create_legend_item(id, ime) {
 
 function add_to_existing_atr(id) {
 	$("div.alternativa div.alt_par_ocena").before(function() {
-		return "<input type='text' id='"+$(this).parent().attr("id")+"_"+id+"' placeholder='vrednost' class='form-control'  />";
+		return "<input type='text' id='"+$(this).parent().attr("id")+"_"+id+"' value='-vnesite-' class='alt_par_text' />";
 	});
 }
 

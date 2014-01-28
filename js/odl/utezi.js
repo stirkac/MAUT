@@ -3,32 +3,33 @@
 /*
    Id = id starsa (u1, u1_1, u0... ali 0 če je na najvišji stopnji)
 */
-function dodaj_utez(ime, parent) { //id = parent
+function dodaj_utez(ime, parent, opis) { //id = parent
+
 	var new_id = id_utezi;
 	var generated_id = "u"+new_id;
 	
 	//var opis = "Tukaj je opis funkcije";
 	
-	data[generated_id] = [];
-	data[generated_id]['ime'] = ime;
-	data[generated_id]['tip'] = null;
+	podatki[generated_id] = [];
+	podatki[generated_id]['ime'] = ime;
+	podatki[generated_id]['opis'] = opis;
+	podatki[generated_id]['tip'] = null;
 	
 	var append = "\
 	<li id='u"+new_id+"'> \
 		<div class='slider'></div> \
 		<div class='item'> \
 			<text>"+ime+"</text> \
-			<button class='btn-success btn-xs'>Dodaj</button> \
-			<button class='btn-warning btn-xs'>Uredi</button> \
-			<button class='btn-danger btn-xs'>Odstrani</button> \
+			<span class='close'></span> \
+			<span class='add'></span> \
+			<span class='edit'></span> \
 		</div> \
 		<ul id='u"+new_id+"_l'></ul> \
 	</li>";
-	
+	console.log(new_id);
 	if(parent == 0) { //dodajamo na najvišjo stopnjo
 	
 		$("#main_list").append(append);
-		//alert("#u"+main_nodes);
 		handle_utez_item("u"+new_id);
 		id_utezi++;
 		
@@ -40,7 +41,6 @@ function dodaj_utez(ime, parent) { //id = parent
 			//element.append("<ul id='"+parent+"_l'><li id='"+parent+"_0'>"+ime+"</li></ul>");
 			element_list.append(append);
 			handle_utez_item("u"+new_id);
-			//$("#"+parent+"_"+main_nodes[parent]).each(handle_utez_item);
 			id_utezi++;
 			
 			
@@ -50,7 +50,7 @@ function dodaj_utez(ime, parent) { //id = parent
 	}
 	
 	//generated_id
-	create_function(generated_id, ime, "normal");
+	create_function(generated_id, ime, opis, "normal");
 	create_legend_item(generated_id, ime);
 	add_to_existing_atr(generated_id);
 	clear_functions();
@@ -62,6 +62,7 @@ function handle_utez_item(id) { //Nastavljanje vseh funkcionalnosi za novo nasta
 	//$("#"+id).sortable({ delay: 100 });
 	
 	var parent_id = $("#"+id).parent().attr("id");
+	console.log(parent_id);
 	$("#"+parent_id).sortable({
 		delay: 100,
 		connectWith: "ul",
@@ -80,25 +81,25 @@ function handle_utez_item(id) { //Nastavljanje vseh funkcionalnosi za novo nasta
 		stop: drsnik
 	});
 	
-	$("#"+id).children("div[class=item]").children("button[class='btn-danger btn-xs']").click(function() {
+	$("#"+id).children("div[class=item]").children("span[class=close]").click(function() {
 		odstrani_utez($(this).parent().parent().attr("id"));
 	});
 	
-	$("#"+id).children("div[class=item]").children("button[class='btn-success btn-xs']").click(function() {
+	$("#"+id).children("div[class=item]").children("span[class=add]").click(function() {
 		//alert($(this).parent().parent().attr("id"));
-		dodaj_utez("Nov element ", $(this).parent().parent().attr("id"));
+		dodaj_utez("brez imena", $(this).parent().parent().attr("id"));
 	});
 	
-	$("#"+id).children("div[class=item]").children("button[class='btn-warning btn-xs']").click(function() {
-		console.log("editing: " + $(this).parent().parent().attr("id"));
-
+	$("#"+id).children("div[class=item]").children("span[class=edit]").click(function() {
+		console.log("editing: " + $(this).parent().attr("id"));
 		var id = $(this).parent().parent().attr("id");
 		uredi_utez = id;
 		console.log(id);
-		console.log(data[id]['ime']);
+		console.log(podatki[id]['ime']);
 		$("#uredi_utez").attr("value", id);
 
-		$("#utez_ime").attr("value", data[id]['ime']);
+		$("#utez_ime").attr("value", podatki[id]['ime']);
+		$("#utez_opis").val(podatki[id]['opis']);
 						
 		$(".param, .val").each(function() {
 			this.value = "";
@@ -115,34 +116,60 @@ function handle_utez_item(id) { //Nastavljanje vseh funkcionalnosi za novo nasta
 		$("#eks_max").val("");
 		$("#eks_n").val("");
 		
-		if(data[id]['type'] == null) {
+		if(podatki[id]['type'] == null) {
 			
+			$("#st_div").hide();
+			
+			$("#st").attr('checked', false);
 			$("#lin").attr('checked', false);
 			$("#eks").attr('checked', false);
 			
-		}
-		else if(data[id]['type'] == 'lin') {
+		} else if(podatki[id]['type'] == 'st') {
+			
+			$("#st").attr('checked', true);
+			
+			$("#st_div").show();
+			$("#lin_div").hide();
+			$("#eks_div").hide();
+			
+			var i=0;
+			$(".param").each(function() {
+				if(podatki[id]['st_par']['par'][i] != null) {
+					this.value = podatki[id]['st_par']['par'][i];
+				}
+				i++;
+			});
+			i=0;
+			$(".val").each(function() {
+				if(podatki[id]['st_par']['val'][i] != null) {
+					this.value = podatki[id]['st_par']['val'][i];
+				}
+				i++;
+			});
+			
+			
+		} else if(podatki[id]['type'] == 'lin') {
 			
 			$("#lin").attr('checked', true);
 			
-			
+			$("#st_div").hide();
 			$("#lin_div").show();
 			$("#eks_div").hide();
 			
-			$("#lin_min").val(data[id]['lin_min']);
-			$("#lin_max").val(data[id]['lin_max']);
+			$("#lin_min").val(podatki[id]['lin_min']);
+			$("#lin_max").val(podatki[id]['lin_max']);
 			
-		} else if(data[id]['type'] == 'eks') {
+		} else if(podatki[id]['type'] == 'eks') {
 			
 			$("#eks").attr('checked', true);
 			
-			
+			$("#st_div").hide();
 			$("#lin_div").hide();
 			$("#eks_div").show();
 			
-			$("#eks_min").val(data[id]['eks_min']);
-			$("#eks_max").val(data[id]['eks_max']);
-			$("#eks_n").val(data[id]['eks_n']);
+			$("#eks_min").val(podatki[id]['eks_min']);
+			$("#eks_max").val(podatki[id]['eks_max']);
+			$("#eks_n").val(podatki[id]['eks_n']);
 		}
 		
 		

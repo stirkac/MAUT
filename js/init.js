@@ -1,16 +1,13 @@
-// JavaScript Document
-
 var id_utezi;
 var id_alternative;
-var data = []; //Podatki
-var alternative = []; //Alternative
-var chart;	
-
-
+var data = []; 
+var chart;
+var najboljsa=0;
 	
 $(document).ready(function() {
-	id_alternative = 0; //0 alternativ na zacetku alt
-	id_utezi = 0; //main_nodes	
+
+	id_alternative = 0; 
+	id_utezi = 0; 
 	menu();
 
 	//skrijemo preostale elemente
@@ -18,30 +15,18 @@ $(document).ready(function() {
 	$(".article:not(#art"+1+")").hide(); 
 	
 	//dodamo prvo utez
-	dodaj_utez('Prvi element', 0)
-});
+	dodaj_parameter('Glavni paramater', 0);
 
-
-function menu() {
-	//console.log("binding..." + $("ul.menu li").length);
-	$("ul.menu li").click(function() {
-		//console.log(this.id);
-		var id = this.id.substring(3);
-		
-		
-		$(".article:not(#art"+id+")").hide();
-		$("#art"+id).show();
-		
-	});
-	
+	//stalne funkcije
 	$("#urejanje_utezi_shrani").click(function() {
 		var id = $("#uredi_utez").attr("value");
-		//console.log("UREJANJE"+id);
 		data[id]['ime'] = $("#utez_ime").val();
+
+		console.log("shranjujem: "+id+"ime"+data[id]['ime']);
 		var graph_type = "";
-		console.log("IME: "+$("#utez_ime").val());
+
 		if($("#lin").is(":checked")) {
-			//console.log("linearna");
+
 			data[id]['type'] = 'lin';
 			
 			var lin_max = $("#lin_max").val();
@@ -58,14 +43,13 @@ function menu() {
 				zaloga.push(temp);
 				graf.push(calculate_lin(id, temp));
 			}
-			//console.log(lin_min + " - " + lin_max + ",  k=" + k + ", n=" + n + " = " + zaloga);
+
 			data[id]['graph'].xAxis.categories = zaloga;
 			data[id]['graph'].series[0].data = graf;
 			
 			var chart = new Highcharts.Chart(data[id]['graph']);
 			
 		} else if($("#eks").is(":checked")) {
-			//console.log("eksponentna");
 			data[id]['type'] = 'eks';
 			
 			var eks_max = $("#eks_max").val();
@@ -93,9 +77,8 @@ function menu() {
 			
 		}
 		
-		console.log("trenutna: "+data[id]['ime']);
 		$("li#"+id+" > div[class=item] > text").html(data[id]['ime']);
-		$("div#"+id+" > h3").html(data[id]['ime']);
+		$("div#"+id+" > p").html("<strong>"+data[id]['ime']+"<strong>");
 		$("div#al_"+id).html(data[id]['ime']);
 		
 		$("#urejanje_utezi").hide();
@@ -105,7 +88,7 @@ function menu() {
 		$("#urejanje_utezi").hide();
 	});
 		
-	$(".edit_radio").change(function() {
+	$(".edit_radio").change(function() { //zamenjava tipa funkcije
 		var id = $(".edit_radio:checked").attr("id");
 		$(".func_edit").hide();
 		$("#"+id+"_div").show();
@@ -118,8 +101,18 @@ function menu() {
 	$("#izracun").click(function() {
 		izracunaj_oceno();
 	});
-	
-	
-	
+});
 
+
+function menu() {
+	$("ul.menu li").click(function() {
+		var id = this.id.substring(3);
+		if(id==4 && $(".alternativa").length==0){
+			dodaj_alternativo(); //zadnji tab
+		}
+		
+		$(".article:not(#art"+id+")").hide();
+		$("#art"+id).show();
+		
+	});
 }
